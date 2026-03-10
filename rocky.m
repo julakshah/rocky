@@ -5,12 +5,18 @@ function main
     range = [100:200];
     single_v_L = v_L(range);
     single_t = t(range) - t(range(1));
-    fitData(single_t, single_v_L, plot_flag);
+    [alpha, c] = fitData(single_t, single_v_L, plot_flag);
     [t, theta] = load_pendulum_data(plot_flag);
+
+    % U_step * beta = c
+    U_step = 1 %just 1 bc -300,300 is -1,1 in motor space?
+    beta = c/U_step
+    tau = 1/alpha
+
 end
 
 
-function fitData(t, v_L, plot_flag)
+function [a, c] = fitData(t, v_L, plot_flag)
     [xData, yData] = prepareCurveData( t, v_L );
     
     % Set up fittype and options.
@@ -32,6 +38,8 @@ function fitData(t, v_L, plot_flag)
         ylabel( 'v_L', 'Interpreter', 'none' );
         grid on
     end
+    a = fitresult.a;
+    c = fitresult.c;
 end
 
 function [t, y_L, v_L, y_R, v_R] = load_motor_data(plot_flag)
