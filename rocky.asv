@@ -1,16 +1,15 @@
 function main
-    plot_flag = true; %choose whether to show plots or not
-
+    plot_flag = false;
     [t, y_L, v_L, y_R, v_R] = load_motor_data(plot_flag);
     range = [100:200];
     single_v_L = v_L(range);
     single_t = t(range) - t(range(1));
-    fitData(single_t, single_v_L, plot_flag);
-    [t, theta] = load_pendulum_data(plot_flag);
+    fitData(single_t, single_v_L. plot_flag);
+    load_pendulum_data(plot_flag)
 end
 
 
-function fitData(t, v_L, plot_flag)
+function fitData(t, v_L)
     [xData, yData] = prepareCurveData( t, v_L );
     
     % Set up fittype and options.
@@ -23,21 +22,19 @@ function fitData(t, v_L, plot_flag)
     [fitresult, gof] = fit( xData, yData, ft, opts );
     
     % Plot fit with data.
-    if plot_flag
-        figure( 'Name', 'untitled fit 1' );
-        h = plot( fitresult, xData, yData );
-        legend( h, 'v_L vs. t', 'untitled fit 1', 'Location', 'NorthEast', 'Interpreter', 'none' );
-        % Label axes
-        xlabel( 't', 'Interpreter', 'none' );
-        ylabel( 'v_L', 'Interpreter', 'none' );
-        grid on
-    end
+    figure( 'Name', 'untitled fit 1' );
+    h = plot( fitresult, xData, yData );
+    legend( h, 'v_L vs. t', 'untitled fit 1', 'Location', 'NorthEast', 'Interpreter', 'none' );
+    % Label axes
+    xlabel( 't', 'Interpreter', 'none' );
+    ylabel( 'v_L', 'Interpreter', 'none' );
+    grid on
 end
 
-function [t, y_L, v_L, y_R, v_R] = load_motor_data(plot_flag)
+function [t, y_L, v_L, y_R, v_R] = load_motor_data()
     %path and file name of data
     fpath = './'; %path (change this!)
-    fname_in = 'motor_calibration.txt'; %file name (change this!)
+    fname_in = 'motor_calib.txt'; %file name (change this!)
     %load the motor calibration data
     motor_data = importdata([fpath,fname_in]);
     %unpack the motor calibration data
@@ -67,19 +64,19 @@ function [t, y_L, v_L, y_R, v_R] = load_motor_data(plot_flag)
 end
 
 %loads and plots the pendulum calibration data
-function [t, theta] = load_pendulum_data(plot_flag)
+function [t, theta] = load_pendulum_data()
     %path and file name of data
-    fpath = './'; %path (change this!)
+    fpath = 'C:\Users\taylorott\Documents\ESA_Data\'; %path (change this!)
     fname_in = 'pendulum_calibration_data.txt'; %file name (change this!)
     %load the pendulum calibration data
     pendulum_data = importdata([fpath,fname_in]);
     %unpack the pendulum calibration data
-    t = pendulum_data(:,1) - pendulum_data(1, 1); theta = pendulum_data(:,2);
+    t = pendulum_data(:,1); theta = pendulum_data(:,2);
     %plot the motor calibration data
     if plot_flag
         figure();
         hold on
-        plot(t,theta,'c','linewidth',1);
+        plot(t,theta,'k','linewidth',1);
         xlabel('time (sec)'); ylabel('angle (rad)');
         title('Pendulum Calibration Data');
     end
