@@ -1,15 +1,34 @@
 function main
-    plot_flag = false;
+    plot_flag = true; %choose whether to show plots or not
+
     [t, y_L, v_L, y_R, v_R] = load_motor_data(plot_flag);
     range = [100:200];
     single_v_L = v_L(range);
     single_t = t(range) - t(range(1));
-    fitData(single_t, single_v_L. plot_flag);
-    load_pendulum_data(plot_flag)
+    [alpha, c] = fitData(single_t, single_v_L, plot_flag)
+    [t_gyro, theta] = load_pendulum_data(plot_flag);
+    t_gyro
+
+    % U_step * beta = c
+    U_step = 300; %just 1 bc -300,300 is -1,1 in motor space?
+    beta = c/U_step;
+    tau = 1/alpha;
+
+    counter = 1;
+    while t_gyro(counter) < 5
+        counter = counter + 1;
+    end
+
+    t_fit_gyro = t_gyro(counter:end) - t_gyro(counter);
+    theta_fit_gyro = theta(counter:end);
+
+    [wd, sigma, wn, zeta] = fit_underdamped(t_fit_gyro, theta_fit_gyro, plot_flag);
+    
+
 end
 
 
-function fitData(t, v_L)
+function [a, c] = fitData(t, v_L, plot_flag)
     [xData, yData] = prepareCurveData( t, v_L );
     
     % Set up fittype and options.
@@ -22,19 +41,23 @@ function fitData(t, v_L)
     [fitresult, gof] = fit( xData, yData, ft, opts );
     
     % Plot fit with data.
-    figure( 'Name', 'untitled fit 1' );
-    h = plot( fitresult, xData, yData );
-    legend( h, 'v_L vs. t', 'untitled fit 1', 'Location', 'NorthEast', 'Interpreter', 'none' );
-    % Label axes
-    xlabel( 't', 'Interpreter', 'none' );
-    ylabel( 'v_L', 'Interpreter', 'none' );
-    grid on
+    if plot_flag
+        figure('');
+        h = plot( fitresult, xData, yData );
+        legend( h, 'v_L vs. t', 'untitled fit 1', 'Location', 'NorthEast', 'Interpreter', 'none' );
+        % Label axes
+        xlabel( 't', 'Interpreter', 'none' );
+        ylabel( 'v_L', 'Interpreter', 'none' );
+        grid on
+    end
+    a = fitresult.a;
+    c = fitresult.c;
 end
 
-function [t, y_L, v_L, y_R, v_R] = load_motor_data()
+function [t, y_L, v_L, y_R, v_R] = load_motor_data(plot_flag)
     %path and file name of data
     fpath = './'; %path (change this!)
-    fname_in = 'motor_calib.txt'; %file name (change this!)
+    fname_in = 'motor_calibration.txt'; %file name (change this!)
     %load the motor calibration data
     motor_data = importdata([fpath,fname_in]);
     %unpack the motor calibration data
@@ -64,20 +87,46 @@ function [t, y_L, v_L, y_R, v_R] = load_motor_data()
 end
 
 %loads and plots the pendulum calibration data
-function [t, theta] = load_pendulum_data()
+function [t, theta] = load_pendulum_data(plot_flag)
     %path and file name of data
-    fpath = 'C:\Users\taylorott\Documents\ESA_Data\'; %path (change this!)
+    fpath = './'; %path (change this!)
     fname_in = 'pendulum_calibration_data.txt'; %file name (change this!)
     %load the pendulum calibration data
     pendulum_data = importdata([fpath,fname_in]);
     %unpack the pendulum calibration data
-    t = pendulum_data(:,1); theta = pendulum_data(:,2);
+    t = pendulum_data(:,1) - pendulum_data(1, 1); theta = pendulum_data(:,2);
     %plot the motor calibration data
     if plot_flag
         figure();
         hold on
-        plot(t,theta,'k','linewidth',1);
+        plot(t,theta,'c','linewidth',1);
         xlabel('time (sec)'); ylabel('angle (rad)');
         title('Pendulum Calibration Data');
+    end
+end
+
+function [omega_d, sigma, omega_n, zeta] = fit_underdamped(t, theta, plot_flag)
+    %runs the custom curve fitting tool
+    signal_params = regress_underdamped_response(t,theta);
+    %unpack results
+    C = signal_params.C; S = signal_params.S; D = signal_params.D;
+    omega_d = signal_params.omega_d; sigma = signal_params.sigma;
+    omega_n = signal_params.omega_n; zeta = signal_params.zeta;
+
+    if plot_flag
+        % create a function for time values
+        y_fit = D + (C*cos(omega_d * t) + S*sin(omega_d * t)) .* exp(-sigma * t);
+
+        %plot step response data
+        figure()
+        hold on
+        plot(t,theta,'r.','DisplayName','theta');
+        plot(t, y_fit, 'b', 'DisplayName','theta fit')
+        %create axis labels, title and legend
+        title('Measured v. Fit Angle of Pendulum System');
+        my_legend = legend();
+        set(my_legend,'location','southeast');
+        xlabel('t (sec)');
+        ylabel('theta (radians)');
     end
 end
