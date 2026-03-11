@@ -5,13 +5,14 @@ function main
     range = [100:200];
     single_v_L = v_L(range);
     single_t = t(range) - t(range(1));
-    [alpha, c] = fitData(single_t, single_v_L, plot_flag);
+    [alpha, c] = fitData(single_t, single_v_L, plot_flag)
     [t, theta] = load_pendulum_data(plot_flag);
 
     % U_step * beta = c
-    U_step = 1 %just 1 bc -300,300 is -1,1 in motor space?
+    U_step = 300 %just 1 bc -300,300 is -1,1 in motor space?
     beta = c/U_step
     tau = 1/alpha
+    
 
 end
 
