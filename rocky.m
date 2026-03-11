@@ -27,7 +27,8 @@ function main
     theta_fit_gyro = theta(start_post:end_post);
 
     [wd, sigma, wn, zeta] = fit_underdamped(t_fit_gyro, theta_fit_gyro, plot_flag)
-    
+    g = 9.81; % gravitational acceleration in m/s^2
+    leff = g/(wn^2)
 
 end
 
