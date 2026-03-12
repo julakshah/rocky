@@ -11,7 +11,8 @@ function main
 
     % U_step * beta = c
     U_step = 300; %just 1 bc -300,300 is -1,1 in motor space?
-    beta = c/U_step;
+    beta = c/U_step
+    alpha
     tau = 1/alpha;
 
     start_post = 1;
