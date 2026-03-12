@@ -1,7 +1,7 @@
 % Rocky_closed_loop_poles_23.m
 %
 % 1) Symbolically calculates closed loop transfer function of a disturbannce
-% rejection PI control system for Rocky. 
+% rejection PI control system for Rocky.
 % No motor model (M =1). With motor model (1st order TF)
 %
 % 2) Specify location of (target)poles based on desired reponse. The number of
@@ -12,13 +12,13 @@
 %
 % 4) Solve for Ki, Kp  to match coefficients of polynomials. In general,
 % this will be underdefined and will not be able to place poles in exact
-% locations. In this, the control constants can be found exactly 
+% locations. In this, the control constants can be found exactly
 %
-% 5) Plot impulse and step response to see closed-loop behavior. 
+% 5) Plot impulse and step response to see closed-loop behavior.
 %
 % based on code by SG. last modified 2/25/23 CL
 
-clear all; 
+clear all;
 close all;
 
 syms s a b l g Kp Ki    % define symbolic variables
@@ -26,10 +26,10 @@ syms s a b l g Kp Ki    % define symbolic variables
 Hvtheta = -s/l/(s^2-g/l);       % TF from velocity to angle of pendulum
 
 K = Kp + Ki/s;                  % TF of the PI angle controller
-M = a*b/(s+a)                   % TF of motor (1st order model) 
+M = a*b/(s+a)                   % TF of motor (1st order model)
 %  M = 1;                       % TF without motor
 %
-%  
+%
 % closed loop transfer function from disturbance d(t)totheta(t)
 Hcloop = 1/(1-Hvtheta*M*K)    % use this for no motor feedback
 
@@ -38,18 +38,18 @@ pretty(simplify(Hcloop))       % to display the total transfer function
 % Substitute parameters and solve
 % system parameters
 g = 9.81;
-l = 22*2.54/100   %effective length 
-a = 14;           %nominal motor parameters
-b = 1/400;        %nominal motor parameters
+l = 0.4781   %effective length
+a = 19.701;           %nominal motor parameters
+b = 0.0029;        %nominal motor parameters
 
 Hcloop_sub = subs(Hcloop) % sub parameter values into Hcloop
 
 % specify locations of the target poles,
 % choose # based on order of Htot denominator
-% e.g., want some oscillations, want fast decay, etc. 
-p1 = -6.567   % dominant pole pair
-p2 = -6.567   % dominant pole pair 
-p3 = -6.567
+% e.g., want some oscillations, want fast decay, etc.
+p1 = -a/3  % dominant pole pair
+p2 = -a/3    % dominant pole pair
+p3 = -a/3
 
 
 % target characteristic polynomial
@@ -78,7 +78,7 @@ solutions = solve(coeffs_denom(1:npoly-1) == coeffs_tgt(1:npoly-1),  Kp, Ki)
 Kp = double(solutions.Kp)
 Ki = double(solutions.Ki)
 
-% reorder coefficients for the check polynomial 
+% reorder coefficients for the check polynomial
 for ii = 1:length(coeffs_denom)
     chk_coeffs_denom(ii) = coeffs_denom(length(coeffs_denom) + 1 - ii);
 end
@@ -95,8 +95,8 @@ closed_loop_poles = vpa (roots(subs(chk_coeffs_denom)), npoly )
     impulse(TFH);   %plot the impulse reponse
     figure(2)
     step(TFH)       %plot the step response
-    
-    
+
+
 
 
 
