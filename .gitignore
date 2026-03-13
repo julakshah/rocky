@@ -2,4 +2,5 @@
 slprj/*
 scripts/slprj/*
 .DS_Store
+scripts/*.asv
 

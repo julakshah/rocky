@@ -36,6 +36,50 @@ function main
     g = 9.81; % gravitational acceleration in m/s^2
     leff = g/(wn^2)
 
+    p1 = -alphaR / 3 + 0*i;
+    p2 = -alphaR / 3 + 0*i;
+    p3 = -alphaR / 3 + 0*i;
+
+    figure(6)
+    hold on
+    plot(real(p1), imag(p1), 'rx', LineWidth=3, MarkerSize=21, DisplayName='p1')
+    plot(real(p2), imag(p2), 'gx', LineWidth=3, MarkerSize=18, DisplayName='p2')
+    plot(real(p3), imag(p3), 'cx', LineWidth=3, MarkerSize=15, DisplayName='p3')
+    legend()
+    xline(0, HandleVisibility='off')
+    yline(0, HandleVisibility='off')
+    xlim([-8, 1])
+    title('s place graph of 3 pole system poles')
+    xlabel('Re()')
+    ylabel('Im()')
+    grid on
+    hold off
+
+    p1 = -1 + 2*i;
+    p2 = -1 - 2*i;
+    p3 = -6 + 0*i;
+    p4 = -4 + 0*i;
+    p5 = -4 + 0*i;
+
+    figure(7)
+    hold on
+    plot(real(p1), imag(p1), 'rx', LineWidth=3, MarkerSize=15, DisplayName='p1')
+    plot(real(p2), imag(p2), 'gx', LineWidth=3, MarkerSize=15, DisplayName='p2')
+    plot(real(p3), imag(p3), 'cx', LineWidth=3, MarkerSize=15, DisplayName='p3')
+    plot(real(p4), imag(p4), 'yx', LineWidth=3, MarkerSize=18, DisplayName='p2')
+    plot(real(p5), imag(p5), 'bx', LineWidth=3, MarkerSize=13, DisplayName='p3')
+    legend()
+    xline(0, HandleVisibility='off')
+    yline(0, HandleVisibility='off')
+    xlim([-8, 1])
+    ylim([-3, 3])
+    title('s place graph of 5 pole system poles')
+    xlabel('Re()')
+    ylabel('Im()')
+    grid on
+    hold off
+
+
 end
 
 
