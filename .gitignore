@@ -1,3 +1,5 @@
 *.slxc
 slprj/*
+scripts/slprj/*
 .DS_Store
+
