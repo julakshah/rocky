@@ -6,16 +6,16 @@ function main
     single_v_L = v_L(range);
     single_t = t(range) - t(range(1));
     single_v_R = v_R(range);
-    %[alphaL, cL] = fitData(single_t, single_v_L, plot_flag)
-    [alphaR, cR] = fitData(single_t, single_v_R, plot_flag)
+    [alphaL, c] = fitData(single_t, single_v_L, plot_flag)
+    [alphaR, c] = fitData(single_t, single_v_R, plot_flag)
     [t_gyro, theta] = load_pendulum_data(plot_flag);
     
 
     % U_step * beta = c
     U_step = 300; %just 1 bc -300,300 is -1,1 in motor space?
-    % betaL = cL/U_step
-    % alphaL
-    % tau = 1/alphaL;
+    betaL = cL/U_step
+    alphaL
+    tau = 1/alphaL;
     betaR = cR/U_step
     alphaR
     tau = 1/alphaR;
@@ -55,10 +55,10 @@ function [a, c] = fitData(t, v_L, plot_flag)
     if plot_flag
         figure(1);
         h = plot( fitresult, xData, yData );
-        legend( h, 'v_R vs. t', 'Exponential Fit', 'Location', 'SouthEast', 'Interpreter', 'none' );
+        legend( h, 'v_L vs. t', 'Exponential Fit', 'Location', 'SouthEast', 'Interpreter', 'none' );
         % Label axes
         xlabel( 't (s)', 'Interpreter', 'none' );
-        ylabel( 'v_R (m/s)', 'Interpreter', 'none' );
+        ylabel( 'v_L (m/s)', 'Interpreter', 'none' );
         grid on
     end
     a = fitresult.a;
